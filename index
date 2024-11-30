@@ -1,0 +1,234 @@
+<html><head><base href="https://raw.githubusercontent.com/CoolWebAssets/assets/main/"><style>
+/* CSS štýly */
+body {
+  font-family: 'Segoe UI', 'Arial Unicode MS', Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #1a1a1a;
+  color: #333;
+}
+
+.quiz-container {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255,215,0,0.3);
+  border: 2px solid #ffd700;
+}
+
+.question {
+  margin-bottom: 25px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #fff8e7;
+  border: 1px solid #ffd700;
+}
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.answer-option {
+  padding: 12px;
+  margin: 5px 0;
+  border: 2px solid #ffd700;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: white;
+}
+
+.answer-option:hover {
+  background: #fff8e7;
+  border-color: #ffb700;
+}
+
+.answer-option.selected {
+  background: #ffd700;
+  color: black;
+  border-color: #ffb700;
+}
+
+.email-form {
+  margin-top: 30px;
+  padding: 20px;
+  background: #fff8e7;
+  border-radius: 12px;
+  border: 1px solid #ffd700;
+}
+
+.consent-checkbox {
+  margin: 15px 0;
+}
+
+input[type="email"] {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  background: white;
+}
+
+button {
+  background: #ffd700;
+  color: black;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #ffb700;
+}
+
+h1, h3 {
+  color: black;
+}
+</style></head><body>
+<div class="quiz-container">
+  <h1>Kvíz</h1>
+  <form id="quizForm">
+    <div class="questions">
+      <!-- Otázky budou dynamicky generované JavaScript-em -->
+    </div>
+    
+    <div class="email-form">
+      <h3>Zadejte svůj email pro vyhodnocení</h3>
+      <input type="email" id="userEmail" required placeholder="vas@email.com">
+      <div class="consent-checkbox">
+        <input type="checkbox" id="consent" required>
+        <label for="consent">Souhlasím se zpracováním osobních údajů</label>
+      </div>
+      <button type="submit">Odeslat odpovědi</button>
+    </div>
+  </form>
+</div>
+
+<script>
+const questions = [
+  {
+    question: "Vzor 1",
+    answers: [
+      { text: "Vzor jedna odpověď jedna", points: 1 },
+      { text: "Vzor jedna odpověď dva", points: 2 },
+      { text: "Vzor jedna odpověď tři", points: 3 }
+    ]
+  },
+  {
+    question: "Vzor 2",
+    answers: [
+      { text: "Vzor dva odpověď jedna", points: 2 },
+      { text: "Vzor dva odpověď dva", points: 3 },
+      { text: "Vzor dva odpověď tři", points: 1 }
+    ]
+  },
+  {
+    question: "Vzor 3",
+    answers: [
+      { text: "Vzor tři odpověď jedna", points: 3 },
+      { text: "Vzor tři odpověď dva", points: 1 },
+      { text: "Vzor tři odpověď tři", points: 2 }
+    ]
+  },
+  {
+    question: "Vzor 4",
+    answers: [
+      { text: "Vzor čtyři odpověď jedna", points: 1 },
+      { text: "Vzor čtyři odpověď dva", points: 3 },
+      { text: "Vzor čtyři odpověď tři", points: 2 }
+    ]
+  },
+  {
+    question: "Vzor 5",
+    answers: [
+      { text: "Vzor pět odpověď jedna", points: 2 },
+      { text: "Vzor pět odpověď dva", points: 1 },
+      { text: "Vzor pět odpověď tři", points: 3 }
+    ]
+  },
+  {
+    question: "Vzor 6",
+    answers: [
+      { text: "Vzor šest odpověď jedna", points: 3 },
+      { text: "Vzor šest odpověď dva", points: 2 },
+      { text: "Vzor šest odpověď tři", points: 1 }
+    ]
+  },
+  {
+    question: "Vzor 7",
+    answers: [
+      { text: "Vzor sedm odpověď jedna", points: 2 },
+      { text: "Vzor sedm odpověď dva", points: 3 },
+      { text: "Vzor sedm odpověď tři", points: 1 }
+    ]
+  }
+];
+
+// Generování HTML pro otázky
+const questionsContainer = document.querySelector('.questions');
+questions.forEach((q, qIndex) => {
+  const questionDiv = document.createElement('div');
+  questionDiv.className = 'question';
+  questionDiv.innerHTML = `
+    <h3>${q.question}</h3>
+    <div class="answers" data-question="${qIndex}">
+      ${q.answers.map((answer, aIndex) => `
+        <div class="answer-option" data-points="${answer.points}" onclick="selectAnswer(${qIndex}, ${aIndex}, this)">
+          ${answer.text} 
+        </div>
+      `).join('')}
+    </div>
+  `;
+  questionsContainer.appendChild(questionDiv);
+});
+
+// Sledování vybraných odpovědí
+let selectedAnswers = new Array(questions.length).fill(null);
+
+function selectAnswer(questionIndex, answerIndex, element) {
+  // Odstranění předchozího výběru
+  const answerContainer = element.parentElement;
+  answerContainer.querySelectorAll('.answer-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+  
+  // Označení nové odpovědi
+  element.classList.add('selected');
+  selectedAnswers[questionIndex] = questions[questionIndex].answers[answerIndex].points;
+}
+
+// Zpracování formuláře
+document.getElementById('quizForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  // Kontrola, zda jsou vybrané všechny odpovědi
+  if (selectedAnswers.includes(null)) {
+    alert('Prosím, odpovězte na všechny otázky.');
+    return;
+  }
+  
+  const email = document.getElementById('userEmail').value;
+  const consent = document.getElementById('consent').checked;
+  
+  if (!consent) {
+    alert('Pro odeslání výsledků je potřebný souhlas se zpracováním údajů.');
+    return;
+  }
+  
+  const totalPoints = selectedAnswers.reduce((sum, points) => sum + points, 0);
+  
+  // Simulace odeslání emailu (v reálné aplikaci by zde byl backend kód)
+  alert(`Děkujeme za vyplnění kvízu! Výsledky budou odeslány na ${email}`);
+  
+  // Zde by následoval skutečný kód pro odeslání na server
+});
+</script>
+</body></html>
